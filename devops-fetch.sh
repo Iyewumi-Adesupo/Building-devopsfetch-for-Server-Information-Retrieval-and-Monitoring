@@ -1,26 +1,19 @@
 #!/bin/bash
 
+# Define log file location
+LOG_FILE="/var/log/devops-fetch.log"
+
 # Create directories and files with appropriate permissions
 sudo mkdir -p /var/log/
-sudo touch "$devops-fetch.log"
-sudo chown root:adm "$devops-fetch.log"
-sudo chmod 777 "$devops-fetch.log"
-
-
-# Log file location
-echo "Log entry" >> /var/log/devops-fetch.log
-
-
-# Create the script file in /opt/devops-tools and make it executable
-sudo mkdir -p /opt/devops-tools
-sudo touch /opt/devops-tools/devops-fetch.sh
-sudo chmod +x /opt/devops-tools/devops-fetch.sh
+sudo touch "$LOG_FILE"
+sudo chown root:adm "$LOG_FILE"
+sudo chmod 664 "$LOG_FILE"
 
 # Function to log messages with timestamps
 log() {
     local level="$1"
     local message="$2"
-    echo "$(date '+%Y-%m-%d %H:%M:%S') $level: $message" | sudo tee -a "$devops-fetch.log"
+    echo "$(date '+%Y-%m-%d %H:%M:%S') $level: $message" | sudo tee -a "$LOG_FILE" > /dev/null
 }
 
 # Function to display usage information
@@ -39,12 +32,12 @@ show_help() {
 # Function to display all active ports and services
 display_ports() {
     if [ -n "$1" ]; then
-        PORT_NUMBER=$1
+        local PORT_NUMBER="$1"
         log "INFO" "Details for port $PORT_NUMBER:"
-        sudo ss -tuln | awk -v port="$PORT_NUMBER" '$5 ~ ":"port {print $0}' | tee -a "$devops-fetch.log"
+        sudo ss -tuln | awk -v port="$PORT_NUMBER" '$5 ~ ":"port {print $0}' | tee -a "$LOG_FILE"
     else
         log "INFO" "Active Ports and Services:"
-        sudo ss -tuln | awk '{print $1, $4, $5}' | column -t -N "Proto,Local Address,Remote Address" | tee -a "$devops-fetch.log"
+        sudo ss -tuln | awk '{print $1, $4, $5}' | column -t -N "Proto,Local Address,Remote Address" | tee -a "$LOG_FILE"
     fi
 }
 
@@ -56,15 +49,15 @@ display_docker_info() {
     fi
 
     if [ -n "$1" ]; then
-        CONTAINER_NAME=$1
+        local CONTAINER_NAME="$1"
         log "INFO" "Details for Docker container $CONTAINER_NAME:"
-        sudo docker inspect "$CONTAINER_NAME" | tee -a "$devops-fetch.log"
+        sudo docker inspect "$CONTAINER_NAME" | tee -a "$LOG_FILE"
     else
         log "INFO" "Docker Images:"
-        sudo docker images --format "table {{.Repository}}\t{{.Tag}}\t{{.ID}}\t{{.Size}}" | tee -a "$devops-fetch.log"
+        sudo docker images --format "table {{.Repository}}\t{{.Tag}}\t{{.ID}}\t{{.Size}}" | tee -a "$LOG_FILE"
 
         log "INFO" "Docker Containers:"
-        sudo docker ps -a --format "table {{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}" | tee -a "$devops-fetch.log"
+        sudo docker ps -a --format "table {{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}" | tee -a "$LOG_FILE"
     fi
 }
 
@@ -76,32 +69,32 @@ display_nginx_info() {
     fi
 
     if [ -n "$1" ]; then
-        DOMAIN=$1
+        local DOMAIN="$1"
         log "INFO" "Nginx configuration for domain $DOMAIN:"
-        sudo nginx -T 2>/dev/null | grep -A 20 "server_name .*${DOMAIN}" | tee -a "$devops-fetch.log"
+        sudo nginx -T 2>/dev/null | grep -A 20 "server_name .*${DOMAIN}" | tee -a "$LOG_FILE"
     else
         log "INFO" "Nginx Domains and Ports:"
-        sudo nginx -T 2>/dev/null | awk '/server_name/ {print $2}' | column -t -N "Domain" | tee -a "$devops-fetch.log"
+        sudo nginx -T 2>/dev/null | awk '/server_name/ {print $2}' | column -t -N "Domain" | tee -a "$LOG_FILE"
     fi
 }
 
 # Function to list users and their last login times
 display_user_info() {
     if [ -n "$1" ]; then
-        USERNAME=$1
+        local USERNAME="$1"
         log "INFO" "Details for user $USERNAME:"
-        sudo lastlog -u "$USERNAME" | tee -a "$devops-fetch.log"
+        sudo lastlog -u "$USERNAME" | tee -a "$LOG_FILE"
     else
         log "INFO" "Users and their last login times:"
-        sudo lastlog | tee -a "$devops-fetch.log"
+        sudo lastlog | tee -a "$LOG_FILE"
     fi
 }
 
 # Function to display activities within a specified time range
 display_time_range() {
-    TIME_RANGE=$1
+    local TIME_RANGE="$1"
     log "INFO" "Displaying activities within the time range: $TIME_RANGE"
-    sudo journalctl --since="$TIME_RANGE" | tee -a "$devops-fetch.log"
+    sudo journalctl --since="$TIME_RANGE" | tee -a "$LOG_FILE"
 }
 
 # Main script execution

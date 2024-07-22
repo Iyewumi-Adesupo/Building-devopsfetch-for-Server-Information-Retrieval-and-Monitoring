@@ -9,7 +9,7 @@ SYSTEMD_TIMER_FILE="/etc/systemd/system/devops-fetch.timer"
 
 # Ensure necessary directories exist
 sudo mkdir -p "$SCRIPT_DIR"
-sudo mkdir -p "$(dirname "$LOG_FILE")"
+sudo mkdir -p "$(dirname "$log")"
 
 # Function to install necessary packages
 install_dependencies() {
