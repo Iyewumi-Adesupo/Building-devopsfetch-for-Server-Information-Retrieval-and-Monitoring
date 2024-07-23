@@ -10,7 +10,19 @@ fi
 
 # Install dependencies
 apt update
-apt install -y nginx docker.io jq
+
+# Update the package list
+sudo apt update
+
+# Install Nginx
+sudo apt install -y nginx
+
+# Install Docker
+sudo apt install -y docker.io
+
+# Install jq
+sudo apt install -y jq
+
 
 # Copy the main script to /usr/local/bin
 cp devopsfetch.sh /usr/local/bin/devopsfetch

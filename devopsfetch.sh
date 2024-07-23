@@ -2,7 +2,7 @@
 
 # Function to display help message
 display_help() {
-    echo "Usage: devops-fetch [OPTION]"
+    echo "Usage: devopsfetch [OPTION]"
     echo "Collect and display system information for DevOps purposes."
     echo
     echo "Options:"
@@ -24,22 +24,75 @@ get_active_ports() {
     done | sort -n | uniq | awk 'BEGIN {print "Port\tUser\tService\tState"} {print}'
 }
 
-
 # Function to get port info
 get_port_info() {
     local port=$1
-    ss -tlpn | grep ":$port " | awk '{print "Port: " $4 "\nProcess: " $6}'
+
+    # Use ss with sudo to ensure we have the required permissions
+    port_info=$(sudo ss -tlpn | awk -v port=":$port" '$4 ~ port {print $0}')
+
+    # Check if port_info is empty
+    if [ -z "$port_info" ]; then
+        echo "Port: $port not found"
+    else
+        echo "Port information found: $port_info"
+        # Extract user, service, and port information
+        echo "$port_info" | awk '{
+            split($4, addr_port, ":")
+            split($6, user_service, ",")
+            user = ""
+            service = ""
+            for (i = 1; i <= length(user_service); i++) {
+                if (user_service[i] ~ /uid=/) {
+                    split(user_service[i], user_split, "=")
+                    user = user_split[2]
+                } else if (user_service[i] ~ /name=/) {
+                    split(user_service[i], service_split, "=")
+                    service = service_split[2]
+                }
+            }
+            printf "Port\tUser\tService\n"
+            printf "%s\t%s\t%s\n", addr_port[length(addr_port)], user, service
+        }'
+    fi
+}
+
+# Function to format output as a table
+format_table() {
+    # Use column command to format output into a table
+    column -t -s $'\t'
 }
 
 # Function to get Docker info
 get_docker_info() {
-    docker ps -a --format "ID\t{{.ID}}\nImage\t{{.Image}}\nStatus\t{{.Status}}\n" | format_table
+    docker images --format "table {{.Repository}}\t{{.Tag}}\t{{.ID}}\t{{.CreatedAt}}\t{{.Size}}"
+    
+
+    echo -e "\nDocker Containers:"
+    docker ps -a --format "table {{.ID}}\t{{.Image}}\t{{.Status}}\t{{.Names}}" |
+    (read -r; printf "%s\n" "$REPLY"; sort -k 2 ) |
+    column -t -s $'\t' | sed 's/^/  /'
 }
 
-# Function to get container info
+# Function to get container info and format it into a table
 get_container_info() {
-    local container_id=$1
-    docker inspect $container_id | jq '.[0] | {Id, Name, Image, State}'
+    local container_name=$1
+
+    # Retrieve container info using docker inspect and format it with jq
+    docker inspect "$container_name" | jq -r '
+        [
+            .[0] | 
+            {
+                Id: .Id,
+                Name: .Name,
+                Image: .Config.Image,
+                State: .State.Status
+            }
+        ] | 
+        (.[0] | to_entries | map(.key) | join("\t")) as $keys |
+        (.[0] | to_entries | map(.value) | join("\t")) as $values |
+        $keys + "\n" + $values
+    ' | column -t -s $'\t'
 }
 
 # Function to get Nginx domains
