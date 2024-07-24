@@ -107,24 +107,42 @@ get_nginx_domain_info() {
     grep -r -A20 "server_name $domain" /etc/nginx/sites-enabled/
 }
 
-# Function to get users
-get_users() {
-    last | awk '{print $1}' | sort | uniq | \
-    awk 'BEGIN {print "User\tLast Login"} {print $1 "\t" systime()}' | format_table
-}
-
-# Function to get user info
-get_user_info() {
-    local username=$1
-    id $username
-    last $username | head -n5
-}
-
 # Function to get activities within a time range
 get_activities() {
     local start_time=$1
     local end_time=$2
-    journalctl --since "$start_time" --until "$end_time"
+    
+    echo "Activities from $start_time to $end_time:"
+    echo "----------------------------------------"
+    printf "%-25s | %-15s | %-30s\n" "Timestamp" "User" "Activity"
+    echo "----------------------------------------"
+    
+    activities=$(journalctl --since "$start_time" --until "$end_time" --output=short-precise)
+    
+    if [ -z "$activities" ]; then
+        echo "No activities found in the specified time range."
+    else
+        echo "$activities" | while IFS= read -r line; do
+            timestamp=$(echo "$line" | awk '{print $1, $2, $3}')
+            user=$(echo "$line" | awk '{print $4}' | tr -d ':')
+            activity=$(echo "$line" | cut -d: -f4- | sed 's/^ *//')
+            printf "%-25s | %-15s | %-30s\n" "$timestamp" "$user" "${activity:0:30}"
+        done
+    fi
+}
+# Function to display usage information
+display_help() {
+    echo "Usage: $0 [OPTION]..."
+    echo "Display user information or system activities."
+    echo ""
+    echo "Options:"
+    echo "  -u, --users               List all users and their last login times"
+    echo "  -d, --details <username>  Provide detailed information about a specific user"
+    echo "  -t, --time <start> <end>  Display activities within a specified time range"
+    echo "  -h, --help                Display this help message"
+    echo ""
+    echo "Time format for -t option: 'YYYY-MM-DD HH:MM:SS'"
+    echo "Example: $0 -t '2023-07-22 10:00:00' '2023-07-24 11:00:00'"
 }
 
 # Main script logic
@@ -151,13 +169,18 @@ case "$1" in
         fi
         ;;
     -u|--users)
-        if [ -z "$2" ]; then
-            get_users
-        else
-            get_user_info "$2"
-        fi
-        ;;
-    -t|--time)
+            list_users_last_login
+            shift
+            ;;
+        --details)
+            if [ -z "$2" ] || [[ "$2" == -* ]]; then
+                echo "Please provide a username for detailed information."
+                exit 1
+            fi
+            user_details "$2"
+            shift 2
+            ;;
+   -t|--time)
         if [ -z "$2" ] || [ -z "$3" ]; then
             echo "Error: Start and end times are required for -t option"
             exit 1
