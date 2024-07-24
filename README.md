@@ -229,3 +229,26 @@ git push origin feature-name
 
 
 ![devops-fetch sh - Building-devopsfetch-for-Server-Information-Retrieval-and-Monitoring  WSL_ Ubuntu  - Visual Studio Code 23_07_2024 01_24_55](https://github.com/user-attachments/assets/939b0747-5b44-4df8-bb27-5c21c6bb33d2)
+
+
+
+![devops-fetch sh - Building-devopsfetch-for-Server-Information-Retrieval-and-Monitoring  WSL_ Ubuntu  - Visual Studio Code 23_07_2024 01_42_06](https://github.com/user-attachments/assets/ce1a9304-562c-4a4c-b82f-64ce3fd4c9bc)
+
+
+![devops-fetch sh - Building-devopsfetch-for-Server-Information-Retrieval-and-Monitoring  WSL_ Ubuntu  - Visual Studio Code 23_07_2024 14_39_16](https://github.com/user-attachments/assets/4cdaa226-8c33-42d2-9608-461958ebc418)
+
+
+![devopsfetch sh - Building-devopsfetch-for-Server-Information-Retrieval-and-Monitoring  WSL_ Ubuntu  - Visual Studio Code 24_07_2024 21_01_49](https://github.com/user-attachments/assets/12d3f81e-7f1e-4ea6-ba79-82d4cb83ffa9)
+
+
+![devopsfetch sh - Building-devopsfetch-for-Server-Information-Retrieval-and-Monitoring  WSL_ Ubuntu  - Visual Studio Code 24_07_2024 21_02_56](https://github.com/user-attachments/assets/057fffe2-7c33-414d-baed-c7060dd8ddf3)
+
+
+![devopsfetch sh - Building-devopsfetch-for-Server-Information-Retrieval-and-Monitoring  WSL_ Ubuntu  - Visual Studio Code 24_07_2024 21_10_44](https://github.com/user-attachments/assets/7f7fedc4-26d1-4b46-968a-6890feecc156)
+
+
+![installation-script sh - Building-devopsfetch-for-Server-Information-Retrieval-and-Monitoring  WSL_ Ubuntu  - Visual Studio Code 24_07_2024 13_45_47](https://github.com/user-attachments/assets/a710da4c-19b5-4702-9450-ebd009165655)
+
+
+![installation-script sh - Building-devopsfetch-for-Server-Information-Retrieval-and-Monitoring  WSL_ Ubuntu  - Visual Studio Code 24_07_2024 13_48_05](https://github.com/user-attachments/assets/be4c3067-1215-47ee-b46f-14f499cdc0e4)
+
