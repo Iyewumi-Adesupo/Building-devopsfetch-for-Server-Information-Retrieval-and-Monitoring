@@ -1,5 +1,15 @@
 #!/bin/bash
 
+
+# Define log file location
+LOG_FILE="/var/log/devopsfetch.log"
+
+# Create directories and files with appropriate permissions
+sudo mkdir -p /var/log/
+sudo touch "$LOG_FILE"
+sudo chown root:adm "$LOG_FILE"
+sudo chmod 664 "$LOG_FILE"
+
 # Function to display help message
 display_help() {
     echo "Usage: devopsfetch [OPTION]"
