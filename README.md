@@ -228,4 +228,4 @@ git push origin feature-name
 ```
 
 
-Open a pull request on GitHub.
+![devops-fetch sh - Building-devopsfetch-for-Server-Information-Retrieval-and-Monitoring  WSL_ Ubuntu  - Visual Studio Code 23_07_2024 01_24_55](https://github.com/user-attachments/assets/939b0747-5b44-4df8-bb27-5c21c6bb33d2)
