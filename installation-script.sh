@@ -83,7 +83,7 @@ EOF
 # Create systemd timer file for periodic execution
     sudo tee "$SYSTEMD_TIMER_FILE" > /dev/null << EOF
 [Unit]
-Description=Runs devops-fetch every 10 minutes
+Description=Runs devopsfetch every 10 minutes
 
 [Timer]
 OnBootSec=5min
